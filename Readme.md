@@ -6,4 +6,4 @@ Rust + Bevy based game
 
 - Install Rust
 
-- Run `cargo run` in the project direcoty
+- Run `cargo run` in the project directory 
