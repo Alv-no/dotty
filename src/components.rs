@@ -47,11 +47,12 @@ pub enum DirectionX {
 pub enum DotState {
     Jumping,
     Standing,
-    Falling,
+    Falling
 }
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
 pub enum JumpState {
-    Single,
-    Double
+    NoJump,
+    SingleJump,
+    DoubleJump
 }

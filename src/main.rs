@@ -6,7 +6,7 @@ use crate::components::{Camera, CollidedWithPlatform, DirectionX, Dot, Movable, 
 use crate::components::Direction::{Down, Up};
 use crate::components::DirectionX::{Left, Right};
 use crate::components::DotState::{Falling, Jumping, Standing};
-use crate::components::JumpState::{Single, Double};
+use crate::components::JumpState::{NoJump, SingleJump, DoubleJump};
 
 mod colors;
 mod components;
@@ -34,7 +34,7 @@ fn setup(
         material: materials.add(ColorMaterial::from(ORANGE)),
         transform: Transform::from_translation(Vec3::new(0., 0., 0.)),
         ..default()
-    }, Movable, CollidedWithPlatform(false), MovementState(Falling), JumpingState(Single),
+    }, Movable, CollidedWithPlatform(false), MovementState(Falling), JumpingState(NoJump),
                     Speed { x: 0., y: 0. }, Dot { direction: Down, direction_x: DirectionX::Right }));
 
 
@@ -130,7 +130,7 @@ fn apply_collision(mut movable_query: Query<(&mut Transform, &mut CollidedWithPl
             transform.translation.y = y + 10.;
             speed.y = 0.;
             movable_state.0 = Standing;
-            jumping_state.0 = Single;
+            jumping_state.0 = NoJump;
         };
     };
     x
@@ -167,11 +167,16 @@ fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&m
         }
 
         if (keyboard_input.just_pressed(KeyCode::W) || keyboard_input.just_pressed(KeyCode::Up)
-            || keyboard_input.just_pressed(KeyCode::Space)) && (dot_state.0 == Standing || jumping_state.0 == Single) {
+            || keyboard_input.just_pressed(KeyCode::Space)) && (dot_state.0 == Standing || jumping_state.0 != DoubleJump) {
             dot.direction = Up;
             dot_state.0 = Jumping;
-            jumping_state.0 = Double;
             speed.y = 3.;
+
+            if jumping_state.0 == NoJump {
+                jumping_state.0 = SingleJump
+            } else if jumping_state.0 == SingleJump {
+                jumping_state.0 = DoubleJump;
+            }
         }
         if keyboard_input.just_released(KeyCode::A) || keyboard_input.just_released(KeyCode::Left)
             || keyboard_input.just_released(KeyCode::D) || keyboard_input.just_released(KeyCode::Right) {
