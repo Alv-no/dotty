@@ -1,13 +1,13 @@
 use bevy::prelude::Component;
 
 #[derive(Component)]
-pub struct Dot{
+pub struct Dot {
     pub direction: Direction,
     pub direction_x: DirectionX,
 }
 
 #[derive(Component)]
-pub struct Speed{
+pub struct Speed {
     pub x: f32,
     pub y: f32,
 }
@@ -51,19 +51,19 @@ pub enum DirectionX {
 pub enum YDotState {
     Jumping,
     Standing,
-    Falling
+    Falling,
 }
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
 pub enum XDotState {
     Decelerating,
     Stopped,
-    Accelerating
+    Accelerating,
 }
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
 pub enum JumpState {
     NoJump,
     SingleJump,
-    DoubleJump
+    DoubleJump,
 }
