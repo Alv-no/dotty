@@ -15,8 +15,8 @@ fn main() {
         .insert_resource(ClearColor(BLUE))
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (apply_gravity.before(apply_collision), apply_collision,camera_follow_dot))
-        .add_systems(PostUpdate, (move_dot, handle_keyboard))
+        .add_systems(Update, (apply_gravity.before(apply_collision), apply_collision, death_dot))
+        .add_systems(PostUpdate, (move_dot, handle_keyboard, camera_follow_dot))
         .run();
 }
 
@@ -42,12 +42,11 @@ fn setup(
 }
 
 fn init_map(
-    map : &str,
+    map: &str,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-
     let mut x = 0;
     let mut y = 0;
 
@@ -91,11 +90,27 @@ fn apply_gravity(
 }
 
 fn camera_follow_dot(
-    mut dot_transform_query: Query<( & Transform), (With<Dot>,Without<Camera>)>,
-    mut camera_query: Query<(&mut Transform), (With<Camera>,Without<Dot>)>) {
+    mut dot_transform_query: Query<( &Transform), (With<Dot>, Without<Camera>)>,
+    mut camera_query: Query<(&mut Transform), (With<Camera>, Without<Dot>)>) {
     for (mut transform) in dot_transform_query.iter_mut() {
         camera_query.single_mut().translation.x = transform.translation.x;
     }
+}
+
+fn death_dot(
+    mut commands: Commands,
+    mut dot_transform_query: Query<(&Transform, Entity), (With<Dot>)>,
+    mut all_entities: Query<(  Entity), (With<Platform>)>,
+) {
+    dot_transform_query.iter_mut().for_each(|(transform, entity)| {
+        if transform.translation.y < -1000. {
+            commands.entity(entity).despawn();
+
+            all_entities.iter().for_each(|entity| {
+                commands.entity(entity).despawn();
+            })
+        }
+    });
 }
 
 fn apply_collision(mut movable_query: Query<(&mut Transform, &mut CollidedWithPlatform, &mut Speed, &mut MovementState), (With<Movable>, Without<Platform>)>,
@@ -154,7 +169,7 @@ fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&m
             || keyboard_input.just_pressed(KeyCode::Space)) && dot_state.0 == Standing {
             dot.direction = Up;
             dot_state.0 = Jumping;
-            speed.y = 3. ;
+            speed.y = 3.;
         }
         if keyboard_input.just_released(KeyCode::A) || keyboard_input.just_released(KeyCode::Left)
             || keyboard_input.just_released(KeyCode::D) || keyboard_input.just_released(KeyCode::Right) {
