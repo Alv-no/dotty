@@ -27,6 +27,16 @@ fn setup(
 ) {
     commands.spawn(Camera2dBundle::default());
 
+    // Circle
+    commands.spawn((MaterialMesh2dBundle {
+        mesh: meshes.add(shape::Circle::new(10.).into()).into(),
+        material: materials.add(ColorMaterial::from(ORANGE)),
+        transform: Transform::from_translation(Vec3::new(0., 0., 0.)),
+        ..default()
+    }, Movable, CollidedWithPlatform(false), MovementState(Falling),
+                    Speed { x: 0., y: 0. }, Dot { direction: Down, direction_x: DirectionX::Right }));
+
+
     let map = include_str!("./map.txt");
     init_map(map, commands, meshes, materials);
 }
@@ -37,15 +47,6 @@ fn init_map(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    // Circle
-    commands.spawn((MaterialMesh2dBundle {
-        mesh: meshes.add(shape::Circle::new(10.).into()).into(),
-        material: materials.add(ColorMaterial::from(ORANGE)),
-        transform: Transform::from_translation(Vec3::new(0., 0., 0.)),
-        ..default()
-    }, Movable, CollidedWithPlatform(false), MovementState(Falling),
-                    Speed { x: 0., y: 0. }, Dot { direction: Down, direction_x: DirectionX::Right }));
-
 
     let mut x = 0;
     let mut y = 0;
