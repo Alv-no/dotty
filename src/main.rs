@@ -176,8 +176,15 @@ fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&m
         if (keyboard_input.just_pressed(KeyCode::W) || keyboard_input.just_pressed(KeyCode::Up)
             || keyboard_input.just_pressed(KeyCode::Space)) && (dot_state.0 == Standing || jumping_state.0 != DoubleJump) {
             dot.direction = Up;
-            dot_state.0 = Jumping;
             speed.y = 3.;
+
+            // Only allow one jump when falling from platform
+            if dot_state.0 == Falling && jumping_state.0 == NoJump {
+                jumping_state.0 = DoubleJump;
+                return;
+            }
+
+            dot_state.0 = Jumping;
 
             if jumping_state.0 == NoJump {
                 jumping_state.0 = SingleJump
