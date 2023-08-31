@@ -38,14 +38,12 @@ fn setup(
 
 
     let map = include_str!("./map.txt");
-    init_map(map, commands, meshes, materials);
+    init_map(map, commands);
 }
 
 fn init_map(
     map : &str,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
 
     let mut x = 0;
