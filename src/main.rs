@@ -108,7 +108,7 @@ fn move_dot(mut dot_query: Query<(&mut Transform, &mut Dot, &mut Speed, &Collide
     let time_delta = time.delta().as_secs_f32();
     for (mut dot_transform, dot, speed, collided_with_platform) in dot_query.iter_mut() {
         if !collided_with_platform.0 {
-            dot_transform.translation.y += speed.y * 3. * time_delta * 50.;
+            dot_transform.translation.y += speed.y * 3. * time_delta * 100.;
         }
 
         match dot.direction_x {
