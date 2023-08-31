@@ -34,7 +34,7 @@ fn setup(
         material: materials.add(ColorMaterial::from(ORANGE)),
         transform: Transform::from_translation(Vec3::new(0., 0., 0.)),
         ..default()
-    }, Movable, CollidedWithPlatform(false), MovementState(Falling),
+    }, Movable, CollidedWithPlatform(false), MovementState(Falling), JumpingState(Single),
                     Speed { x: 0., y: 0. }, Dot { direction: Down, direction_x: DirectionX::Right }));
 
 
