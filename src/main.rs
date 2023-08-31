@@ -105,17 +105,18 @@ fn apply_collision(mut movable_query: Query<(&mut Transform, &mut CollidedWithPl
 
 fn move_dot(mut dot_query: Query<(&mut Transform, &mut Dot, &mut Speed, &CollidedWithPlatform), (Without<Platform>, With<Dot>)>,
             time: Res<Time>) {
+    let time_delta = time.delta().as_secs_f32();
     for (mut dot_transform, dot, speed, collided_with_platform) in dot_query.iter_mut() {
         if !collided_with_platform.0 {
-            dot_transform.translation.y += speed.y * 3.;
+            dot_transform.translation.y += speed.y * 3. * time_delta * 50.;
         }
 
         match dot.direction_x {
             Right => {
-                dot_transform.translation.x += time.delta().as_secs_f32() * speed.x * 200.;
+                dot_transform.translation.x += time_delta * speed.x * 200.;
             }
             Left => {
-                dot_transform.translation.x -= time.delta().as_secs_f32() * speed.x * 200.;
+                dot_transform.translation.x -= time_delta * speed.x * 200.;
             }
         }
     }
@@ -136,7 +137,7 @@ fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&m
             || keyboard_input.just_pressed(KeyCode::Space)) && dot_state.0 == Standing {
             dot.direction = Up;
             dot_state.0 = Jumping;
-            speed.y = 3.;
+            speed.y = 3. ;
         }
         if keyboard_input.just_released(KeyCode::A) || keyboard_input.just_released(KeyCode::Left)
             || keyboard_input.just_released(KeyCode::D) || keyboard_input.just_released(KeyCode::Right) {
