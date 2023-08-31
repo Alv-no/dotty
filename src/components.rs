@@ -18,6 +18,9 @@ pub struct CollidedWithPlatform(pub bool);
 pub struct MovementState(pub DotState);
 
 #[derive(Component)]
+pub struct JumpingState(pub JumpState);
+
+#[derive(Component)]
 pub struct Platform;
 
 #[derive(Component)]
@@ -45,4 +48,10 @@ pub enum DotState {
     Jumping,
     Standing,
     Falling,
+}
+
+#[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
+pub enum JumpState {
+    Single,
+    Double
 }

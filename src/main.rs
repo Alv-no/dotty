@@ -2,10 +2,11 @@ use bevy::prelude::*;
 use bevy::sprite::MaterialMesh2dBundle;
 
 use crate::colors::{BLUE, ORANGE};
-use crate::components::{Camera, CollidedWithPlatform, DirectionX, Dot, Movable, MovementState, Platform, Speed, Stationary};
+use crate::components::{Camera, CollidedWithPlatform, DirectionX, Dot, Movable, MovementState, JumpingState, Platform, Speed, Stationary};
 use crate::components::Direction::{Down, Up};
 use crate::components::DirectionX::{Left, Right};
 use crate::components::DotState::{Falling, Jumping, Standing};
+use crate::components::JumpState::{Single, Double};
 
 mod colors;
 mod components;
@@ -112,9 +113,9 @@ fn death_dot(
     });
 }
 
-fn apply_collision(mut movable_query: Query<(&mut Transform, &mut CollidedWithPlatform, &mut Speed, &mut MovementState), (With<Movable>, Without<Platform>)>,
+fn apply_collision(mut movable_query: Query<(&mut Transform, &mut CollidedWithPlatform, &mut Speed, &mut MovementState, &mut JumpingState), (With<Movable>, Without<Platform>)>,
                    platform_query: Query<(&Transform), (With<Platform>, Without<Movable>)>) {
-    let x = for (mut transform, mut collided_with_platform, mut speed, mut movable_state) in movable_query.iter_mut() {
+    let x = for (mut transform, mut collided_with_platform, mut speed, mut movable_state, mut jumping_state) in movable_query.iter_mut() {
         let prev = collided_with_platform.0;
         let mut y = 0.;
         collided_with_platform.0 = platform_query.iter().any(|platform_transform| {
@@ -129,6 +130,7 @@ fn apply_collision(mut movable_query: Query<(&mut Transform, &mut CollidedWithPl
             transform.translation.y = y + 10.;
             speed.y = 0.;
             movable_state.0 = Standing;
+            jumping_state.0 = Single;
         };
     };
     x
@@ -153,8 +155,8 @@ fn move_dot(mut dot_query: Query<(&mut Transform, &mut Dot, &mut Speed, &Collide
     }
 }
 
-fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&mut Speed, &mut Dot, &mut MovementState), With<Dot>>) {
-    for (mut speed, mut dot, mut dot_state) in dot_query.iter_mut() {
+fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&mut Speed, &mut Dot, &mut MovementState, &mut JumpingState), With<Dot>>) {
+    for (mut speed, mut dot, mut dot_state, mut jumping_state) in dot_query.iter_mut() {
         if keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left) {
             dot.direction_x = Left;
             speed.x = 2.;
@@ -165,9 +167,10 @@ fn handle_keyboard(keyboard_input: Res<Input<KeyCode>>, mut dot_query: Query<(&m
         }
 
         if (keyboard_input.just_pressed(KeyCode::W) || keyboard_input.just_pressed(KeyCode::Up)
-            || keyboard_input.just_pressed(KeyCode::Space)) && dot_state.0 == Standing {
+            || keyboard_input.just_pressed(KeyCode::Space)) && (dot_state.0 == Standing || jumping_state.0 == Single) {
             dot.direction = Up;
             dot_state.0 = Jumping;
+            jumping_state.0 = Double;
             speed.y = 3.;
         }
         if keyboard_input.just_released(KeyCode::A) || keyboard_input.just_released(KeyCode::Left)
