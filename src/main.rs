@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::sprite::MaterialMesh2dBundle;
 
 use crate::colors::{BLUE, ORANGE};
-use crate::components::{CollidedWithPlatform, DirectionX, Dot, Movable, MovementState, Platform, Speed, Stationary};
+use crate::components::{Camera, CollidedWithPlatform, DirectionX, Dot, Movable, MovementState, Platform, Speed, Stationary};
 use crate::components::Direction::{Down, Up};
 use crate::components::DirectionX::{Left, Right};
 use crate::components::DotState::{Falling, Jumping, Standing};
@@ -15,7 +15,7 @@ fn main() {
         .insert_resource(ClearColor(BLUE))
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (apply_gravity.before(apply_collision), apply_collision))
+        .add_systems(Update, (apply_gravity.before(apply_collision), apply_collision,camera_follow_dot))
         .add_systems(PostUpdate, (move_dot, handle_keyboard))
         .run();
 }
@@ -25,7 +25,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn((Camera2dBundle::default(), Camera));
 
     let map = include_str!("./map.txt");
 
@@ -78,6 +78,14 @@ fn apply_gravity(
                 movable_state.0 = Jumping;
             };
         }
+    }
+}
+
+fn camera_follow_dot(
+    mut dot_transform_query: Query<( & Transform), (With<Dot>,Without<Camera>)>,
+    mut camera_query: Query<(&mut Transform), (With<Camera>,Without<Dot>)>) {
+    for (mut transform) in dot_transform_query.iter_mut() {
+        camera_query.single_mut().translation.x = transform.translation.x;
     }
 }
 

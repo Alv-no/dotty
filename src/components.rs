@@ -26,6 +26,9 @@ pub struct Stationary;
 #[derive(Component)]
 pub struct Movable;
 
+#[derive(Component)]
+pub struct Camera;
+
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
 pub enum Direction {
     Up,
