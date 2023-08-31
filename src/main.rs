@@ -28,7 +28,15 @@ fn setup(
     commands.spawn(Camera2dBundle::default());
 
     let map = include_str!("./map.txt");
+    init_map(map, commands, meshes, materials);
+}
 
+fn init_map(
+    map : &str,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
     // Circle
     commands.spawn((MaterialMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(10.).into()).into(),
