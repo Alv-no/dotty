@@ -27,8 +27,6 @@ fn setup(
 ) {
     commands.spawn((Camera2dBundle::default(), Camera));
 
-    let map = include_str!("./map.txt");
-
     // Circle
     commands.spawn((MaterialMesh2dBundle {
         mesh: meshes.add(shape::Circle::new(10.).into()).into(),
@@ -38,6 +36,17 @@ fn setup(
     }, Movable, CollidedWithPlatform(false), MovementState(Falling),
                     Speed { x: 0., y: 0. }, Dot { direction: Down, direction_x: DirectionX::Right }));
 
+
+    let map = include_str!("./map.txt");
+    init_map(map, commands, meshes, materials);
+}
+
+fn init_map(
+    map : &str,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
 
     let mut x = 0;
     let mut y = 0;
