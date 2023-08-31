@@ -244,6 +244,8 @@ fn move_dot(
 }
 
 fn handle_keyboard(
+    asset_server: Res<AssetServer>,
+    mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut dot_query: Query<
         (
@@ -289,6 +291,11 @@ fn handle_keyboard(
             } else if jumping_state.0 == SingleJump {
                 jumping_state.0 = DoubleJump;
             }
+
+            commands.spawn(AudioBundle {
+                source: asset_server.load("audio/jump.ogg"),
+                ..default()
+            });
         }
         if keyboard_input.just_released(KeyCode::A)
             || keyboard_input.just_released(KeyCode::Left)
