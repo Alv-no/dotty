@@ -14,8 +14,12 @@ pub struct Speed{
 
 #[derive(Component)]
 pub struct CollidedWithPlatform(pub bool);
+
 #[derive(Component)]
-pub struct MovementState(pub DotState);
+pub struct YMovementState(pub YDotState);
+
+#[derive(Component)]
+pub struct XMovementState(pub XDotState);
 
 #[derive(Component)]
 pub struct JumpingState(pub JumpState);
@@ -44,10 +48,17 @@ pub enum DirectionX {
 }
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
-pub enum DotState {
+pub enum YDotState {
     Jumping,
     Standing,
     Falling
+}
+
+#[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
+pub enum XDotState {
+    Decelerating,
+    Stopped,
+    Accelerating
 }
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone, Copy)]
