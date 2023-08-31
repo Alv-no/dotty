@@ -16,7 +16,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (apply_gravity.before(apply_collision), apply_collision, death_dot))
-        .add_systems(PostUpdate, (move_dot, handle_keyboard, camera_follow_dot))
+        .add_systems(PostUpdate, (move_dot, handle_keyboard, camera_follow_dot.after(move_dot)))
         .run();
 }
 
@@ -92,6 +92,7 @@ fn camera_follow_dot(
     mut camera_query: Query<(&mut Transform), (With<Camera>, Without<Dot>)>) {
     for (mut transform) in dot_transform_query.iter_mut() {
         camera_query.single_mut().translation.x = transform.translation.x;
+        camera_query.single_mut().translation.y = transform.translation.y;
     }
 }
 
