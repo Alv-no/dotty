@@ -49,7 +49,7 @@ fn init_map(
     let mut y = 0;
 
     map.chars().for_each(|c| {
-        if c == '─' {
+        if c == '-' {
             x += 1;
             commands.spawn((SpriteBundle {
                 sprite: Sprite {
