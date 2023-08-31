@@ -123,7 +123,7 @@ fn apply_gravity(
 }
 
 fn apply_x_movement(
-    mut entities_query: Query<(&mut Speed, &mut XMovementState), (With<Dot>)>,
+    mut entities_query: Query<(&mut Speed, &mut XMovementState), With<Dot>>,
     time: Res<Time>,
 ) {
     for (mut speed, mut x_movement_state) in entities_query.iter_mut() {
@@ -141,17 +141,17 @@ fn apply_x_movement(
 }
 
 fn camera_follow_dot(
-    mut dot_transform_query: Query<(&Transform), (With<Dot>, Without<Camera>)>,
-    mut camera_query: Query<(&mut Transform), (With<Camera>, Without<Dot>)>,
+    mut dot_transform_query: Query<&Transform, (With<Dot>, Without<Camera>)>,
+    mut camera_query: Query<&mut Transform, (With<Camera>, Without<Dot>)>,
     time: Res<Time>,
 ) {
-    for (mut dot_transform) in dot_transform_query.iter_mut() {
+    for dot_transform in dot_transform_query.iter_mut() {
         let delta_y = dot_transform.translation.y - camera_query.single_mut().translation.y;
         let delta_x = dot_transform.translation.x - camera_query.single_mut().translation.x;
-        if (delta_y.abs() > 10.) {
+        if delta_y.abs() > 10. {
             camera_query.single_mut().translation.y += 1. * time.delta().as_secs_f32() * delta_y;
         }
-        if (delta_x.abs() > 10.) {
+        if delta_x.abs() > 10. {
             camera_query.single_mut().translation.x += 1. * time.delta().as_secs_f32() * delta_x;
         }
     }
@@ -159,8 +159,8 @@ fn camera_follow_dot(
 
 fn death_dot(
     mut commands: Commands,
-    mut dot_transform_query: Query<(&Transform, Entity), (With<Dot>)>,
-    mut all_entities: Query<(Entity), (With<Platform>)>,
+    mut dot_transform_query: Query<(&Transform, Entity), With<Dot>>,
+    all_entities: Query<Entity, With<Platform>>,
 ) {
     dot_transform_query
         .iter_mut()
@@ -186,7 +186,7 @@ fn apply_collision(
         ),
         (With<Movable>, Without<Platform>),
     >,
-    platform_query: Query<(&Transform), (With<Platform>, Without<Movable>)>,
+    platform_query: Query<&Transform, (With<Platform>, Without<Movable>)>,
 ) {
     let x = for (
         mut transform,
