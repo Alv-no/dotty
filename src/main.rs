@@ -94,7 +94,7 @@ fn apply_x_movement(
     time: Res<Time>) {
     for (mut speed,  mut x_movement_state) in entities_query.iter_mut() {
         if x_movement_state.0 == Decelerating {
-            speed.x -= 5. * time.delta().as_secs_f32();
+            speed.x -= 6. * time.delta().as_secs_f32();
             if speed.x < 0. {
                 x_movement_state.0 = Stopped;
                 speed.x = 0.
