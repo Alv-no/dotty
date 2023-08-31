@@ -90,10 +90,17 @@ fn apply_gravity(
 
 fn camera_follow_dot(
     mut dot_transform_query: Query<( &Transform), (With<Dot>, Without<Camera>)>,
-    mut camera_query: Query<(&mut Transform), (With<Camera>, Without<Dot>)>) {
-    for (mut transform) in dot_transform_query.iter_mut() {
-        camera_query.single_mut().translation.x = transform.translation.x;
-        camera_query.single_mut().translation.y = transform.translation.y;
+    mut camera_query: Query<(&mut Transform), (With<Camera>, Without<Dot>)>,
+    time: Res<Time>) {
+    for (mut dot_transform) in dot_transform_query.iter_mut() {
+        let delta_y = dot_transform.translation.y - camera_query.single_mut().translation.y;
+        let delta_x = dot_transform.translation.x - camera_query.single_mut().translation.x;
+        if (delta_y.abs() > 10.) {
+            camera_query.single_mut().translation.y += 1. * time.delta().as_secs_f32() * delta_y;
+        }
+        if (delta_x.abs() > 10.) {
+            camera_query.single_mut().translation.x += 1. * time.delta().as_secs_f32() * delta_x;
+        }
     }
 }
 
