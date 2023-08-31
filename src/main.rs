@@ -10,6 +10,7 @@ use crate::components::YDotState::{Falling, Jumping, Standing};
 use crate::components::{
     Camera, CollidedWithPlatform, DirectionX, Dot, JumpingState, Movable, Platform, Speed,
     Stationary, XMovementState, YMovementState,
+    Coin,
 };
 
 mod colors;
@@ -91,6 +92,27 @@ fn init_map(map: &str, mut commands: Commands) {
                 Platform,
                 Stationary,
             ));
+        }
+        if c == 'o' {
+            x += 1;
+            commands.spawn((
+                SpriteBundle {
+                    sprite: Sprite {
+                        color: Color::rgb(0.0, 1.0, 0.0),
+                        custom_size: Some(Vec2::new(10.0, 10.0)),
+                        ..default()
+                    },
+                    transform: Transform::from_translation(Vec3::new(
+                        -700. + (1. * x as f32 * 10.),
+                        100. - 25. * y as f32,
+                        -1.,
+                    )),
+                    ..default()
+                },
+                Coin,
+                Stationary,
+            ));
+
         }
         if c == ' ' {
             x += 1;
